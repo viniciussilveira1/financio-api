@@ -23,7 +23,7 @@ export class UsersController {
 
   @Get()
   findAll() {
-    return this.usersService.findUsersList();
+    return this.usersService.getUsersList();
   }
 
   @Post()

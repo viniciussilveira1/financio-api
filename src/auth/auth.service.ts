@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/require-await */
-import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { AuthenticatedUser } from './models/User';
-import * as bcrypt from 'bcrypt';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { AuthenticatedUser, LoginRequest } from './models/User';
 import { UsersService } from '../users/users.service';
+import { comparePassword } from '../users/utils/hash-password.util';
 
 @Injectable()
 export class AuthService {
@@ -12,19 +11,17 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(
-    username: string,
-    password: string,
-  ): Promise<AuthenticatedUser | null> {
-    const user = await this.usersService.findByUsername(username);
+  async validateUser(body: LoginRequest): Promise<AuthenticatedUser> {
+    const user = await this.usersService.findByUsername(body.username);
 
-    if (user && (await bcrypt.compare(password, user.password))) {
-      return { userId: user.userId, username: user.username };
+    if (!user || !(await comparePassword(body.password, user.password))) {
+      throw new UnauthorizedException('Usuário ou senha inválidos');
     }
-    return null;
+
+    return user;
   }
 
-  async login(user: AuthenticatedUser): Promise<{ access_token: string }> {
+  login(user: AuthenticatedUser): { access_token: string } {
     const payload = { username: user.username, sub: user.userId };
     return {
       access_token: this.jwtService.sign(payload),

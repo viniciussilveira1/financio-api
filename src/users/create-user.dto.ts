@@ -1,8 +1,18 @@
-import { IsString, IsNotEmpty, MinLength, Matches } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  MinLength,
+  Matches,
+  IsEmail,
+} from 'class-validator';
 
 export class CreateUserDto {
+  @IsEmail({}, { message: 'E-mail inválido' })
+  @IsNotEmpty({ message: 'E-mail é obrigatório' })
+  email: string;
+
   @IsString()
-  @IsNotEmpty({ message: 'O nome de usuário é obrigatório' })
+  @IsNotEmpty({ message: 'Nome de usuário é obrigatório' })
   username: string;
 
   @IsString()
@@ -16,5 +26,6 @@ export class CreateUserDto {
 
 export class UserResponseDto {
   userId: number;
+  email: string;
   username: string;
 }

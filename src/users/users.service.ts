@@ -16,13 +16,12 @@ export class UsersService {
     return await this.usersRepository.findOneBy({ userId });
   }
 
-  async findUsersList(): Promise<User[] | null> {
-    return await this.usersRepository.find();
+  async findByUsername(username: string): Promise<User | null> {
+    return await this.usersRepository.findOneBy({ username });
   }
 
-  async userExists(username: string): Promise<boolean> {
-    const user = await this.usersRepository.findOneBy({ username });
-    return !!user;
+  async getUsersList(): Promise<User[] | null> {
+    return await this.usersRepository.find();
   }
 
   async create(data: CreateUserDto) {
@@ -36,6 +35,7 @@ export class UsersService {
 
     const user = this.usersRepository.create({
       username: data.username,
+      email: data.email,
       password: hashedPassword,
     });
 
