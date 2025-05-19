@@ -4,6 +4,6 @@ export interface AuthenticatedUser {
 }
 
 export interface LoginRequest {
-  username: string;
+  email: string;
   password: string;
 }

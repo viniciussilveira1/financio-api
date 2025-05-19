@@ -16,8 +16,8 @@ export class UsersService {
     return await this.usersRepository.findOneBy({ userId });
   }
 
-  async findByUsername(username: string): Promise<User | null> {
-    return await this.usersRepository.findOneBy({ username });
+  async findByEmail(email: string): Promise<User | null> {
+    return await this.usersRepository.findOneBy({ email });
   }
 
   async getUsersList(): Promise<User[] | null> {
