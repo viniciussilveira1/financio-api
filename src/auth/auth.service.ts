@@ -1,23 +1,33 @@
-/* eslint-disable @typescript-eslint/require-await */
-import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { AuthenticatedUser } from './models/User';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { AuthenticatedUser, LoginRequest } from './models/Authentication';
+import { UsersService } from '../users/users.service';
+import { comparePassword } from '../users/utils/hash-password.util';
 
 @Injectable()
 export class AuthService {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private usersService: UsersService,
+    private jwtService: JwtService,
+  ) {}
 
-  async validateUser(
-    username: string,
-    password: string,
-  ): Promise<AuthenticatedUser | null> {
-    if (username === 'admin' && password === 'senha123') {
-      return { userId: 1, username: 'admin' };
+  async validateUser(body: LoginRequest): Promise<AuthenticatedUser> {
+    if (!body.email) throw new BadRequestException('E-mail inválido');
+
+    const user = await this.usersService.findByEmail(body.email);
+
+    if (!user || !(await comparePassword(body.password, user.password))) {
+      throw new UnauthorizedException('Usuário ou senha inválidos');
     }
-    return null;
+
+    return user;
   }
 
-  async login(user: AuthenticatedUser): Promise<{ access_token: string }> {
+  login(user: AuthenticatedUser): { access_token: string } {
     const payload = { username: user.username, sub: user.userId };
     return {
       access_token: this.jwtService.sign(payload),
