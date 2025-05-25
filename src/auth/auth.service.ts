@@ -4,7 +4,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { AuthenticatedUser, LoginRequest } from './models/Authentication';
+import { AuthenticatedUser, LoginRequest } from '../models/Authentication';
 import { UsersService } from '../users/users.service';
 import { comparePassword } from '../users/utils/hash-password.util';
 

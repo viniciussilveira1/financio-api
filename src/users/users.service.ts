@@ -25,11 +25,9 @@ export class UsersService {
   }
 
   async create(data: CreateUserDto) {
-    const existingUser = await this.usersRepository.findOneBy({
-      username: data.username,
-    });
-    if (existingUser)
-      throw new BadRequestException('Nome de usuário já registrado');
+    const existingUser = await this.findByEmail(data.email);
+
+    if (existingUser) throw new BadRequestException('E-mail já cadastrado');
 
     const hashedPassword = await hashPassword(data.password);
 
@@ -37,6 +35,16 @@ export class UsersService {
       username: data.username,
       email: data.email,
       password: hashedPassword,
+    });
+
+    return this.usersRepository.save(user);
+  }
+
+  async createFromGoogle(data: { email: string; username: string }) {
+    const user = this.usersRepository.create({
+      email: data.email,
+      username: data.username,
+      password: '',
     });
 
     return this.usersRepository.save(user);
