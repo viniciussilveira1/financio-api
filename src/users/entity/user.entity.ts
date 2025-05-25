@@ -6,11 +6,14 @@ export class User {
   @PrimaryGeneratedColumn()
   userId: number;
 
+  @Column()
+  name: string;
+
   @Column({ unique: true })
   email: string;
 
-  @Column()
-  username: string;
+  @Column({ nullable: true })
+  phone: string;
 
   @Column({ nullable: true })
   @Exclude()
