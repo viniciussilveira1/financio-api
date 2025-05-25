@@ -36,13 +36,12 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       throw new Error('Email não encontrado no perfil do Google');
     }
 
-    const username =
-      profile.displayName || profile.name?.givenName || 'Usuário Google';
-
     let user = await this.usersService.findByEmail(email);
 
     if (!user) {
-      user = await this.usersService.createFromGoogle({ email, username });
+      const name =
+        profile.displayName || profile.name?.givenName || 'Usuário Google';
+      user = await this.usersService.createFromGoogle({ email, name });
     }
 
     return user;
