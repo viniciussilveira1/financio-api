@@ -1,3 +1,4 @@
+import { PartialType } from '@nestjs/swagger';
 import {
   IsString,
   IsNotEmpty,
@@ -30,3 +31,5 @@ export class CreateUserDto {
   })
   password: string;
 }
+
+export class UpdateUserDto extends PartialType(CreateUserDto) {}
