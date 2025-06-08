@@ -6,6 +6,12 @@ import {
   CreateMovementDto,
   UpdateMovementDto,
 } from './dto/create-movement-dto';
+import {
+  DEFAULT_LIMIT,
+  DEFAULT_PAGE,
+  paginate,
+} from '../common/utils/pagination/pagination.util';
+import { PaginationQueryDto } from '../common/utils/pagination/pagination-query.dto';
 
 @Injectable()
 export class MovementsService {
@@ -19,16 +25,32 @@ export class MovementsService {
     return this.repository.save(movement);
   }
 
-  findByWalletId(walletId: number): Promise<Movement[]> {
-    return this.repository.find({
-      where: { walletId },
-    });
+  findByWalletIdPaginated(walletId: number, query: PaginationQueryDto) {
+    const page = query.page ?? DEFAULT_PAGE;
+    const limit = query.limit ?? DEFAULT_LIMIT;
+
+    return paginate(
+      this.repository,
+      {
+        where: { walletId },
+      },
+      page,
+      limit,
+    );
   }
 
-  findByUserId(userId: number): Promise<Movement[]> {
-    return this.repository.find({
-      where: { wallet: { user: { id: userId } } },
-    });
+  findByUserIdPaginated(userId: number, query: PaginationQueryDto) {
+    const page = query.page ?? DEFAULT_PAGE;
+    const limit = query.limit ?? DEFAULT_LIMIT;
+
+    return paginate(
+      this.repository,
+      {
+        where: { wallet: { user: { id: userId } } },
+      },
+      page,
+      limit,
+    );
   }
 
   findById(id: number): Promise<Movement | null> {
