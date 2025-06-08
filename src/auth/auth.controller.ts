@@ -1,6 +1,6 @@
 import { Controller, Post, Body, Get, UseGuards, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthenticatedUser } from '../models/Authentication';
+import { AuthenticatedUser } from '../common/interfaces/Authentication';
 import { Public } from './public.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { LoginRequest } from './dto/login-request.dto';
@@ -24,7 +24,7 @@ export class AuthController {
   @UseGuards(AuthGuard('google'))
   googleAuthRedirect(@Req() req: AuthenticatedUser) {
     return this.authService.login({
-      userId: req.userId,
+      id: req.id,
       name: req.name,
     });
   }

@@ -1,56 +1,65 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entity/user.entity';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
-import { hashPassword } from './utils/hash-password.util';
+import { hashPassword } from '../common/utils/hash-password.util';
+import { CreateGoogleUserDto } from './dto/create-google-user.dto';
+import { UpdateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private usersRepository: Repository<User>,
+    private repository: Repository<User>,
   ) {}
 
-  async findUser(userId: number): Promise<User | null> {
-    return await this.usersRepository.findOneBy({ userId });
-  }
-
-  async findByEmail(email: string): Promise<User | null> {
-    return await this.usersRepository.findOneBy({ email });
-  }
-
-  async getUsersList(): Promise<User[] | null> {
-    return await this.usersRepository.find();
-  }
-
-  async create(data: CreateUserDto) {
+  async create(data: CreateUserDto): Promise<User> {
     const existingUser = await this.findByEmail(data.email);
 
     if (existingUser) throw new BadRequestException('E-mail já cadastrado');
 
     const hashedPassword = await hashPassword(data.password);
 
-    const user = this.usersRepository.create({
+    const user = this.repository.create({
       email: data.email,
       password: hashedPassword,
       name: data.name,
       phone: data.phone,
     });
 
-    return this.usersRepository.save(user);
+    return this.repository.save(user);
   }
 
-  async createFromGoogle(data: { email: string; name: string }) {
-    const user = this.usersRepository.create({
+  createFromGoogle(data: CreateGoogleUserDto): Promise<User> {
+    const user = this.repository.create({
       email: data.email,
       name: data.name,
     });
 
-    return this.usersRepository.save(user);
+    return this.repository.save(user);
   }
 
-  async delete(userId: number) {
-    return await this.usersRepository.delete(userId);
+  update(id: number, data: UpdateUserDto): Promise<UpdateResult> {
+    if (!data || Object.keys(data).length === 0) {
+      throw new BadRequestException('Nenhum dado fornecido para atualização');
+    }
+    return this.repository.update(id, data);
+  }
+
+  findById(id: number): Promise<User | null> {
+    return this.repository.findOneBy({ id });
+  }
+
+  findByEmail(email: string): Promise<User | null> {
+    return this.repository.findOneBy({ email });
+  }
+
+  findAll(): Promise<User[] | null> {
+    return this.repository.find();
+  }
+
+  delete(id: number): Promise<DeleteResult> {
+    return this.repository.delete(id);
   }
 }

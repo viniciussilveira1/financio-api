@@ -6,29 +6,19 @@ import {
   Get,
   Param,
   Post,
-  UseGuards,
+  Put,
   UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Public } from '../auth/public.decorator';
+import { CurrentUserId } from '../auth/decorators/current-user-id.decorator';
+import { UpdateUserDto } from './dto/create-user.dto';
 
-@UseGuards(JwtAuthGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
-  @Get(':id')
-  findById(@Param('id') id: number) {
-    return this.usersService.findUser(id);
-  }
-
-  @Get()
-  findAll() {
-    return this.usersService.getUsersList();
-  }
 
   @Public()
   @Post()
@@ -36,8 +26,28 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @Delete(':id')
-  delete(@Param('id') id: number) {
-    return this.usersService.delete(id);
+  @Put()
+  update(@CurrentUserId() id: number, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(id, updateUserDto);
+  }
+
+  @Get('/me')
+  getMe(@CurrentUserId() userId: number) {
+    return this.usersService.findById(userId);
+  }
+
+  @Get(':id')
+  getById(@Param('id') id: number) {
+    return this.usersService.findById(id);
+  }
+
+  @Get()
+  getAll() {
+    return this.usersService.findAll();
+  }
+
+  @Delete()
+  delete(@CurrentUserId() userId: number) {
+    return this.usersService.delete(userId);
   }
 }
