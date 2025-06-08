@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { MovementsService } from './movements.service';
 import {
@@ -16,6 +17,7 @@ import { Movement } from './entity/movement.entity';
 import { CheckOwnership } from '../common/decorators/ownership.decorator';
 import { Wallet } from '../wallets/entity/wallet.entity';
 import { CurrentUserId } from '../auth/decorators/current-user-id.decorator';
+import { PaginationQueryDto } from '../common/utils/pagination/pagination-query.dto';
 
 @Controller('movements')
 export class MovementController {
@@ -28,14 +30,17 @@ export class MovementController {
   }
 
   @Get()
-  getAll(@CurrentUserId() userId: number) {
-    return this.movementsService.findByUserId(userId);
+  getAll(@CurrentUserId() userId: number, @Query() query: PaginationQueryDto) {
+    return this.movementsService.findByUserIdPaginated(userId, query);
   }
 
   @Get('wallet/:walletId')
   @CheckOwnership(Wallet, 'walletId')
-  getByWalletId(@Param('walletId') walletId: number) {
-    return this.movementsService.findByWalletId(walletId);
+  getByWalletId(
+    @Param('walletId') walletId: number,
+    @Query() query: PaginationQueryDto,
+  ) {
+    return this.movementsService.findByWalletIdPaginated(+walletId, query);
   }
 
   @Post()
