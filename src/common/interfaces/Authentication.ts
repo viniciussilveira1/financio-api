@@ -8,6 +8,7 @@ export interface AuthenticatedUser {
 export interface LoginRequest {
   email: string;
   password: string;
+  rememberMe: boolean;
 }
 
 export interface CustomRequest extends Request {
