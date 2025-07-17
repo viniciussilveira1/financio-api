@@ -56,9 +56,10 @@ export class AuthService {
     user: AuthenticatedUser,
     res: Response,
     rememberMe: boolean,
-  ): void {
+  ): { access_token: string } {
     const { access_token } = this.login(user);
     this.setLoginCookie(res, access_token, rememberMe);
+    return { access_token };
   }
 
   handleOAuthLogin(user: AuthenticatedUser, res: Response): void {

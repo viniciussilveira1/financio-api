@@ -25,7 +25,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const user = await this.authService.validateUser(body);
-    this.authService.handleLogin(user, res, body.rememberMe);
+    return this.authService.handleLogin(user, res, body.rememberMe);
   }
 
   @Get('google')
