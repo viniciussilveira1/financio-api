@@ -34,6 +34,7 @@ export function IsCategoryCompatibleWithType(
             MovementCategory.ALIMENTACAO,
             MovementCategory.TRANSPORTE,
             MovementCategory.LAZER,
+            MovementCategory.EDUCACAO,
             MovementCategory.SAUDE,
             MovementCategory.MORADIA,
             MovementCategory.OUTROS,

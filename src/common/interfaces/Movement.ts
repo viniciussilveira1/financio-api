@@ -14,6 +14,7 @@ export enum MovementCategory {
   LAZER = 'LAZER',
   SAUDE = 'SAUDE',
   MORADIA = 'MORADIA',
+  EDUCACAO = 'EDUCACAO',
 
   // Ambos
   OUTROS = 'OUTROS',
